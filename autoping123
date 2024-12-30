@@ -36,7 +36,7 @@ while true; do
             sleep 2
             cmd connectivity airplane-mode disable
             echo "$(date): Mematikan mode pesawat" >> $LOG_FILE
-            ukuran $LOG_FILE
+            cek_ukuran $LOG_FILE
         fi
         sleep 5
     else
