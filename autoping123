@@ -1,0 +1,47 @@
+#!/system/bin/sh
+
+# Konfigurasi
+TIMEOUT=5
+BUG="http://detectportal.firefox.com/success.txt"
+LOG_FILE=/sdcard/ping.txt
+MOD=/data/adb/modules/Auto_Ping
+CURL=${MOD}/curl
+p=1
+
+update_description() {
+    sed -i "s/description=\[.*\]/description=\[$1\]/" "${MOD}/module.prop"
+}
+
+cek_ukuran() {
+	ukuran=$(stat -c%s "$1")
+	if [ $ukuran -gt 1048576 ]; then
+		rm $LOG_FILE
+	fi
+}
+
+until [ $(getprop init.svc.bootanim) = "stopped" ]; do
+    sleep 10
+done
+update_description "🟢Service is running"
+su -lp 2000 -c "cmd notification post -S bigtext -t 'AUTO PING' 'Tag' 'status : 🟢Service is running'"
+while true; do
+    if [[ -f /data/adb/box/run/box.pid ]]; then
+        a=$($CURL --insecure --max-time $TIMEOUT -fsL -o /dev/null -w "%{http_code}" $BUG)
+        if [ "$a" -ne 0 ]; then
+			((p++))
+        else
+        	echo "$p perulangan" >> $LOG_FILE
+            echo "$(date): Mengaktifkan mode pesawat" >> $LOG_FILE
+            cmd connectivity airplane-mode enable
+            sleep 2
+            cmd connectivity airplane-mode disable
+            echo "$(date): Mematikan mode pesawat" >> $LOG_FILE
+            ukuran $LOG_FILE
+        fi
+        sleep 5
+    else
+        update_description "🔴Service is disabled"
+        su -lp 2000 -c "cmd notification post -S bigtext -t 'AUTO PING' 'Tag' 'status : 🔴Service is disabled'"
+        break
+    fi
+done

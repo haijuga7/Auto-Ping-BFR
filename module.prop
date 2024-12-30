@@ -1,0 +1,6 @@
+id=Auto_Ping
+name=AUTO PING BFR
+version=1.0
+versionCode=10
+author=Mr.A_S
+description=[state] Auto Airplane Mode if no internet connection for BFR
