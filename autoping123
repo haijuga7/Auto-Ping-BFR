@@ -26,6 +26,8 @@ done
 update_description "🟢Service is running"
 su -lp 2000 -c "cmd notification post -S bigtext -t 'AUTO PING' 'Tag' 'status : 🟢Service is running'"
 
+touch $MOD/enable
+
 while true; do
     if [[ -f /data/adb/box/run/box.pid ]]; then
         a=$($CURL --insecure --max-time $TIMEOUT -fsL -o /dev/null -w "%{http_code}" $BUG)
